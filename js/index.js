@@ -16,6 +16,3 @@ port.on("open", () => {
 parser.on('data', data =>{
   console.log('Data recieved from arduino:', data);
 });
-
-
-
