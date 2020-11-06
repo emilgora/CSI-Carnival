@@ -1,3 +1,5 @@
+//This script uses nodejs to listen for serial commands from the arduino. 
+
 //Libraries
 const delay = require('delay');
 const SerialPort = require('serialport');
