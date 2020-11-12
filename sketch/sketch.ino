@@ -16,8 +16,9 @@ const int echoPin = 8;
 float duration, distance; 
 
 //Adafruit color sensor library constructor
-Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_700MS, TCS34725_GAIN_1X);
 byte gammatable[256]; // 
+
 
 const int motor = 9;
 int mot = 0; //# of times arduino detects motor
@@ -40,7 +41,7 @@ void setup() {
 void loop() {
   Serial.println(foo);
 
-  // Ultrasonic activation (https://create.arduino.cc/projecthub/Isaac100/getting-started-with-the-hc-sr04-ultrasonic-sensor-036380)
+  // Ultrasonic (https://create.arduino.cc/projecthub/Isaac100/getting-started-with-the-hc-sr04-ultrasonic-sensor-036380)
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
@@ -52,6 +53,7 @@ void loop() {
   Serial.print("Distance: ");
   Serial.println(distance);
   delay(100);
+
 
     val = digitalRead(motor);
   if(val == HIGH){    //counts how many times motor is detected
@@ -69,5 +71,20 @@ void loop() {
     delay(1000);
     digitalWrite(bar,LOW);
   }
+
+  // Color sense (https://github.com/adafruit/Adafruit_TCS34725/blob/master/examples/tcs34725/tcs34725.ino)
+  uint16_t r, g, b, c, colorTemp, lux;
+  tcs.getRawData(&r, &g, &b, &c);
+  // colorTemp = tcs.calculateColorTemperature(r, g, b);
+  colorTemp = tcs.calculateColorTemperature_dn40(r, g, b, c);
+  lux = tcs.calculateLux(r, g, b);
+  // Output color values to Serial monitor
+  Serial.print("Color Temp: "); Serial.print(colorTemp, DEC); Serial.print(" K - ");
+  Serial.print("Lux: "); Serial.print(lux, DEC); Serial.print(" - ");
+  Serial.print("R: "); Serial.print(r, DEC); Serial.print(" ");
+  Serial.print("G: "); Serial.print(g, DEC); Serial.print(" ");
+  Serial.print("B: "); Serial.print(b, DEC); Serial.print(" ");
+  Serial.print("C: "); Serial.print(c, DEC); Serial.print(" ");
+  Serial.println(" ");
   
 }
