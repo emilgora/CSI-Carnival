@@ -1,3 +1,4 @@
+// Libraries included
 #include <Wire.h>
 #include "Adafruit_TCS34725.h" //https://github.com/adafruit/Adafruit_TCS34725/releases/tag/1.3.3
 
@@ -10,10 +11,11 @@ const int solenoidX = 1;
 const int solenoidY = 1;
 
 // Ultrasonic pins
-const int trigPin = 9;
-const int echoPin = 8;
-// Ultrasonic data
+#define echoPin 8
+#define trigPin 9
+// Ultrasonic processed data
 float duration, distance; 
+bool ballPresent = true;
 
 //Adafruit color sensor library constructor
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_700MS, TCS34725_GAIN_1X);
@@ -41,18 +43,22 @@ void setup() {
 void loop() {
   Serial.println(foo);
 
-  // Ultrasonic (https://create.arduino.cc/projecthub/Isaac100/getting-started-with-the-hc-sr04-ultrasonic-sensor-036380)
+  // Ultrasonic example sketch (https://create.arduino.cc/projecthub/Isaac100/getting-started-with-the-hc-sr04-ultrasonic-sensor-036380)
+  // Clears the trigPin condition
   digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
+  delayMicroseconds(10);
+  // Sets the trigPin HIGH (ACTIVE) for 10 microseconds
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
-  // Ultrasonic data processing
+  // Reads the echoPin, returns the sound wave travel time in microseconds
   duration = pulseIn(echoPin, HIGH);
-  distance = (duration*.0343)/2;
+  // Calculating the distance
+  distance = duration * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
+  // Displays the distance on the Serial Monitor
   Serial.print("Distance: ");
-  Serial.println(distance);
-  delay(100);
+  Serial.print(distance);
+  Serial.println(" cm");
 
 
     val = digitalRead(motor);
@@ -72,7 +78,8 @@ void loop() {
     digitalWrite(bar,LOW);
   }
 
-  // Color sense (https://github.com/adafruit/Adafruit_TCS34725/blob/master/examples/tcs34725/tcs34725.ino)
+  /*
+  // Color sense example sketch (https://github.com/adafruit/Adafruit_TCS34725/blob/master/examples/tcs34725/tcs34725.ino)
   uint16_t r, g, b, c, colorTemp, lux;
   tcs.getRawData(&r, &g, &b, &c);
   // colorTemp = tcs.calculateColorTemperature(r, g, b);
@@ -86,5 +93,5 @@ void loop() {
   Serial.print("B: "); Serial.print(b, DEC); Serial.print(" ");
   Serial.print("C: "); Serial.print(c, DEC); Serial.print(" ");
   Serial.println(" ");
-  
+  */
 }
