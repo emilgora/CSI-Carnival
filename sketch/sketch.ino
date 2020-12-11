@@ -6,13 +6,13 @@
 const int ldrPin = 9;
 // Data
 int brightness = 0;  
-int triggerMax = 315; // Threshold for when the ball IS NOT present
-int triggerMin = 230; // Threshold for when the ball IS present
-bool ballPresent = false;
+const int triggerMax = 315; // Threshold for when the ball IS NOT present
+const int triggerMin = 230; // Threshold for when the ball IS present
+bool ballPresent = false; // For the first few seconds the game will assume that a ball isn't present.
 
 // Adafruit color sensor library constructor - Emil 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_700MS, TCS34725_GAIN_1X);
-// Data - Most of the integers defined 
+// Data - Most of the integers used by the adafruit library are defined later in the sketch.
 byte gammatable[256]; 
 
 // Rods - Jacob
@@ -39,7 +39,7 @@ const int solenoidB = 14;
 
 void setup() {
 
-  // The LDR doesn't use pinMode because it's uses the built-in analog converter.
+  // The LDR doesn't use pinMode because it uses the built-in analog converter.
   // The color sensor also doesn't because it's over the I2C bus. 
 
   pinMode(rodLeft, INPUT);
@@ -121,13 +121,14 @@ void loop() {
 
     // Announce winner through serial monitor:
     if(whiteBallsPassed == 20){
-    Serial.println(The left player has won!);
+    Serial.println("The left player has won!");
     }
 
     if(orangeBallsPassed == 20){
-    Serial.println(The right player has won!);
+    Serial.println("The right player has won!");
     }
-
+    // Potential improvement: write NodeJS script that listens to the arduino's COM port and uses an HTML + EJS page to show a winner/keep track of rotations.
+      
     // At this point you can the game is over and you can press the reset button.
     
 }
