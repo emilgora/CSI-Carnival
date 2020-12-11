@@ -5,31 +5,33 @@
 // LDR - Will
 const int ldrPin = 9;
 // Data
-int brightness = 0;
+int brightness = 0;  
+int triggerMax = 315; // Threshold for when the ball IS NOT present
+int triggerMin = 230; // Threshold for when the ball IS present
 bool ballPresent = false;
 
 //Adafruit color sensor library constructor - Emil
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_700MS, TCS34725_GAIN_1X);
 // Data
-byte gammatable[256]; // 
+byte gammatable[256]; 
 
 // Rods - Jacob
 const int rodLeft = 7;
 const int rodRight = 6;
 // Data
-int motLeft = 0; // # of 
-int motRight = 0; // # of 
-int rotLeft = 0; // # of 
-int rotRight = 0; // # of 
-int valLeft; // # of times the left rod had rotated
-int valRight; // # of 
+int motLeft = 0; // # of times the left button has been pressed
+int motRight = 0; // # of times the right button has been pressed
+int rotLeft = 0; // # of times the left rod had rotated
+int rotRight = 0; // # of times the right rod had rotated 
+int valLeft; // Stores if the left button is high or low
+int valRight; // Stores if the right button is high or low
 
-// Sorting solenoids
-const int solenoidA = 15;
-const int solenoidB = 14;
 // Release solenoids
 const int solenoidX = 16;
 const int solenoidY = 10;
+// Sorting solenoids
+const int solenoidA = 15;
+const int solenoidB = 14;
 
 void setup() {
 
@@ -49,8 +51,17 @@ void setup() {
 }
 
 void loop() {
-  
+
   brightness = analogRead(ldrPin);
+  
+  if(brightness > triggerMax){
+    ballPresent = false;
+  }
+  
+    if(brightness < triggerMin){
+    ballPresent = true;
+  }
+
   
   valLeft = digitalRead(rodLeft);
   valRight = digitalRead(rodRight);
@@ -71,17 +82,35 @@ void loop() {
     motRight = 0;  // Tests to see if rotation is counted  
   }
   
-  // Color sense example sketch (https://github.com/adafruit/Adafruit_TCS34725/blob/master/examples/tcs34725/tcs34725.ino)
-  uint16_t r, g, b, c, colorTemp, lux;
+  // Color sense example sketch (https://github.com/adafruit/Adafruit_TCS34725/blob/master/examples/tcs34725/tcs34725.ino
+  // The adafruit library refers to the red value as "r" so I kept the integer name. -emil
+  uint16_t r, g, b, c;
   tcs.getRawData(&r, &g, &b, &c);
-  // colorTemp = tcs.calculateColorTemperature(r, g, b);
-  colorTemp = tcs.calculateColorTemperature_dn40(r, g, b, c);
-  lux = tcs.calculateLux(r, g, b);
-  // Output color valLeftues to Serial monitor
-  Serial.print("Color Temp: "); Serial.print(colorTemp, DEC); Serial.print(" K - ");
-  Serial.print("Lux: "); Serial.print(lux, DEC); Serial.print(" - ");
-  Serial.print("R: "); Serial.print(r, DEC); Serial.print(" ");
-  
-  Serial.println("<- this is the red valLeftue");
-  
+  Serial.print("Red value: "); Serial.println(r, DEC);  // Outputs red color value to Serial monitor
+
+    // Release balls logic:
+    if(rotLeft == 50){
+      digitalWrite(solenoidX, HIGH);
+      delay(10000);
+      digitalWrite(solenoidX, LOW);
+    }
+
+    if(rotRight == 50){
+      digitalWrite(solenoidY, HIGH);
+      delay(10000);
+      digitalWrite(solenoidY, LOW);
+    }
+
+    // Sort balls logic:
+    if(ballPresent == true && r > 4100){
+      digitalWrite(solenoidA, HIGH);
+      delay(1000);
+      digitalWrite(solenoidA, LOW);
+    }
+        if(ballPresent == true && r < 4100){
+      digitalWrite(solenoidB, HIGH);
+      delay(1000);
+      digitalWrite(solenoidB, LOW);
+    }
+
 }
