@@ -10,9 +10,9 @@ int triggerMax = 315; // Threshold for when the ball IS NOT present
 int triggerMin = 230; // Threshold for when the ball IS present
 bool ballPresent = false;
 
-//Adafruit color sensor library constructor - Emil
+// Adafruit color sensor library constructor - Emil 
 Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_700MS, TCS34725_GAIN_1X);
-// Data
+// Data - Most of the integers defined 
 byte gammatable[256]; 
 
 // Rods - Jacob
@@ -25,6 +25,10 @@ int rotLeft = 0; // # of times the left rod had rotated
 int rotRight = 0; // # of times the right rod had rotated 
 int valLeft; // Stores if the left button is high or low
 int valRight; // Stores if the right button is high or low
+
+// Ball counters
+int whiteBallsPassed = 0;
+int orangeBallsPassed = 0;
 
 // Release solenoids
 const int solenoidX = 16;
@@ -106,11 +110,24 @@ void loop() {
       digitalWrite(solenoidA, HIGH);
       delay(1000);
       digitalWrite(solenoidA, LOW);
+      whiteBallsPassed + 1;
     }
         if(ballPresent == true && r < 4100){
       digitalWrite(solenoidB, HIGH);
       delay(1000);
       digitalWrite(solenoidB, LOW);
+      orangeBallsPassed + 1;
     }
 
+    // Announce winner through serial monitor:
+    if(whiteBallsPassed == 20){
+    Serial.println(The left player has won!);
+    }
+
+    if(orangeBallsPassed == 20){
+    Serial.println(The right player has won!);
+    }
+
+    // At this point you can the game is over and you can press the reset button.
+    
 }
